@@ -411,6 +411,15 @@ s! {
         pub xsu_pagesize: u32,
         pub xsu_encrypted: ::boolean_t,
     }
+
+    pub struct cmsgcred {
+        pub cmcred_pid: ::pid_t,
+        pub cmcred_uid: ::uid_t,
+        pub cmcred_euid: ::uid_t,
+        pub cmcred_gid: ::gid_t,
+        pub cmcred_ngroups: ::c_short,
+        pub cmcred_groups: [::gid_t,CMGROUP_MAX],
+    }
 }
 
 pub const _UTX_USERSIZE: usize = 256;
@@ -437,12 +446,8 @@ pub const LC_MESSAGES_MASK: ::c_int = (1 << 2);
 pub const LC_MONETARY_MASK: ::c_int = (1 << 3);
 pub const LC_NUMERIC_MASK: ::c_int = (1 << 4);
 pub const LC_TIME_MASK: ::c_int = (1 << 5);
-pub const LC_ALL_MASK: ::c_int = LC_COLLATE_MASK
-                               | LC_CTYPE_MASK
-                               | LC_MESSAGES_MASK
-                               | LC_MONETARY_MASK
-                               | LC_NUMERIC_MASK
-                               | LC_TIME_MASK;
+pub const LC_ALL_MASK: ::c_int = LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MESSAGES_MASK |
+    LC_MONETARY_MASK | LC_NUMERIC_MASK | LC_TIME_MASK;
 
 pub const CODESET: ::nl_item = 0;
 pub const D_T_FMT: ::nl_item = 1;
@@ -619,32 +624,22 @@ pub const VM_FLAGS_SUPERPAGE_MASK: ::c_int = 0x70000;
 pub const VM_FLAGS_RETURN_DATA_ADDR: ::c_int = 0x100000;
 pub const VM_FLAGS_RETURN_4K_DATA_ADDR: ::c_int = 0x800000;
 pub const VM_FLAGS_ALIAS_MASK: ::c_int = 0xFF000000;
-pub const VM_FLAGS_USER_ALLOCATE: ::c_int = VM_FLAGS_FIXED | VM_FLAGS_ANYWHERE |
-                                            VM_FLAGS_PURGABLE |
-                                            VM_FLAGS_RANDOM_ADDR |
-                                            VM_FLAGS_NO_CACHE |
-                                            VM_FLAGS_OVERWRITE |
-                                            VM_FLAGS_SUPERPAGE_MASK |
-                                            VM_FLAGS_ALIAS_MASK;
-pub const VM_FLAGS_USER_MAP: ::c_int = VM_FLAGS_USER_ALLOCATE |
-                                       VM_FLAGS_RETURN_4K_DATA_ADDR |
-                                       VM_FLAGS_RETURN_DATA_ADDR;
-pub const VM_FLAGS_USER_REMAP: ::c_int = VM_FLAGS_FIXED | VM_FLAGS_ANYWHERE |
-                                        VM_FLAGS_RANDOM_ADDR |
-                                        VM_FLAGS_OVERWRITE |
-                                        VM_FLAGS_RETURN_DATA_ADDR |
-                                        VM_FLAGS_RESILIENT_CODESIGN;
+pub const VM_FLAGS_USER_ALLOCATE: ::c_int =
+    VM_FLAGS_FIXED | VM_FLAGS_ANYWHERE | VM_FLAGS_PURGABLE | VM_FLAGS_RANDOM_ADDR |
+        VM_FLAGS_NO_CACHE | VM_FLAGS_OVERWRITE | VM_FLAGS_SUPERPAGE_MASK | VM_FLAGS_ALIAS_MASK;
+pub const VM_FLAGS_USER_MAP: ::c_int = VM_FLAGS_USER_ALLOCATE | VM_FLAGS_RETURN_4K_DATA_ADDR |
+    VM_FLAGS_RETURN_DATA_ADDR;
+pub const VM_FLAGS_USER_REMAP: ::c_int =
+    VM_FLAGS_FIXED | VM_FLAGS_ANYWHERE | VM_FLAGS_RANDOM_ADDR | VM_FLAGS_OVERWRITE |
+        VM_FLAGS_RETURN_DATA_ADDR | VM_FLAGS_RESILIENT_CODESIGN;
 
 pub const VM_FLAGS_SUPERPAGE_SHIFT: ::c_int = 16;
 pub const SUPERPAGE_NONE: ::c_int = 0;
 pub const SUPERPAGE_SIZE_ANY: ::c_int = 1;
-pub const VM_FLAGS_SUPERPAGE_NONE: ::c_int = SUPERPAGE_NONE <<
-                                             VM_FLAGS_SUPERPAGE_SHIFT;
-pub const VM_FLAGS_SUPERPAGE_SIZE_ANY: ::c_int = SUPERPAGE_SIZE_ANY <<
-                                                 VM_FLAGS_SUPERPAGE_SHIFT;
+pub const VM_FLAGS_SUPERPAGE_NONE: ::c_int = SUPERPAGE_NONE << VM_FLAGS_SUPERPAGE_SHIFT;
+pub const VM_FLAGS_SUPERPAGE_SIZE_ANY: ::c_int = SUPERPAGE_SIZE_ANY << VM_FLAGS_SUPERPAGE_SHIFT;
 pub const SUPERPAGE_SIZE_2MB: ::c_int = 2;
-pub const VM_FLAGS_SUPERPAGE_SIZE_2MB: ::c_int = SUPERPAGE_SIZE_2MB <<
-                                                 VM_FLAGS_SUPERPAGE_SHIFT;
+pub const VM_FLAGS_SUPERPAGE_SIZE_2MB: ::c_int = SUPERPAGE_SIZE_2MB << VM_FLAGS_SUPERPAGE_SHIFT;
 
 pub const VM_MEMORY_MALLOC: ::c_int = 1;
 pub const VM_MEMORY_MALLOC_SMALL: ::c_int = 2;
@@ -957,17 +952,17 @@ pub const EXTB: speed_t = 38400;
 
 pub const SIGTRAP: ::c_int = 5;
 
-pub const GLOB_APPEND  : ::c_int = 0x0001;
-pub const GLOB_DOOFFS  : ::c_int = 0x0002;
-pub const GLOB_ERR     : ::c_int = 0x0004;
-pub const GLOB_MARK    : ::c_int = 0x0008;
-pub const GLOB_NOCHECK : ::c_int = 0x0010;
-pub const GLOB_NOSORT  : ::c_int = 0x0020;
+pub const GLOB_APPEND: ::c_int = 0x0001;
+pub const GLOB_DOOFFS: ::c_int = 0x0002;
+pub const GLOB_ERR: ::c_int = 0x0004;
+pub const GLOB_MARK: ::c_int = 0x0008;
+pub const GLOB_NOCHECK: ::c_int = 0x0010;
+pub const GLOB_NOSORT: ::c_int = 0x0020;
 pub const GLOB_NOESCAPE: ::c_int = 0x2000;
 
-pub const GLOB_NOSPACE : ::c_int = -1;
-pub const GLOB_ABORTED : ::c_int = -2;
-pub const GLOB_NOMATCH : ::c_int = -3;
+pub const GLOB_NOSPACE: ::c_int = -1;
+pub const GLOB_ABORTED: ::c_int = -2;
+pub const GLOB_NOMATCH: ::c_int = -3;
 
 pub const POSIX_MADV_NORMAL: ::c_int = 0;
 pub const POSIX_MADV_RANDOM: ::c_int = 1;
@@ -1039,7 +1034,7 @@ pub const MADV_FREE_REUSABLE: ::c_int = 7;
 pub const MADV_FREE_REUSE: ::c_int = 8;
 pub const MADV_CAN_REUSE: ::c_int = 9;
 
-pub const MINCORE_INCORE: ::c_int =  0x1;
+pub const MINCORE_INCORE: ::c_int = 0x1;
 pub const MINCORE_REFERENCED: ::c_int = 0x2;
 pub const MINCORE_MODIFIED: ::c_int = 0x4;
 pub const MINCORE_REFERENCED_OTHER: ::c_int = 0x8;
@@ -1308,41 +1303,41 @@ pub const SYSPROTO_CONTROL: ::c_int = 2;
 
 pub const PF_UNSPEC: ::c_int = AF_UNSPEC;
 pub const PF_LOCAL: ::c_int = AF_LOCAL;
-pub const PF_UNIX: ::c_int =  PF_LOCAL;
-pub const PF_INET: ::c_int =  AF_INET;
+pub const PF_UNIX: ::c_int = PF_LOCAL;
+pub const PF_INET: ::c_int = AF_INET;
 pub const PF_IMPLINK: ::c_int = AF_IMPLINK;
-pub const PF_PUP: ::c_int =  AF_PUP;
+pub const PF_PUP: ::c_int = AF_PUP;
 pub const PF_CHAOS: ::c_int = AF_CHAOS;
-pub const PF_NS: ::c_int =  AF_NS;
-pub const PF_ISO: ::c_int =  AF_ISO;
-pub const PF_OSI: ::c_int =  AF_ISO;
-pub const PF_ECMA: ::c_int =  AF_ECMA;
+pub const PF_NS: ::c_int = AF_NS;
+pub const PF_ISO: ::c_int = AF_ISO;
+pub const PF_OSI: ::c_int = AF_ISO;
+pub const PF_ECMA: ::c_int = AF_ECMA;
 pub const PF_DATAKIT: ::c_int = AF_DATAKIT;
 pub const PF_CCITT: ::c_int = AF_CCITT;
-pub const PF_SNA: ::c_int =  AF_SNA;
+pub const PF_SNA: ::c_int = AF_SNA;
 pub const PF_DECnet: ::c_int = AF_DECnet;
-pub const PF_DLI: ::c_int =  AF_DLI;
-pub const PF_LAT: ::c_int =  AF_LAT;
+pub const PF_DLI: ::c_int = AF_DLI;
+pub const PF_LAT: ::c_int = AF_LAT;
 pub const PF_HYLINK: ::c_int = AF_HYLINK;
 pub const PF_APPLETALK: ::c_int = AF_APPLETALK;
 pub const PF_ROUTE: ::c_int = AF_ROUTE;
-pub const PF_LINK: ::c_int =  AF_LINK;
-pub const PF_XTP: ::c_int =  pseudo_AF_XTP;
-pub const PF_COIP: ::c_int =  AF_COIP;
-pub const PF_CNT: ::c_int =  AF_CNT;
-pub const PF_SIP: ::c_int =  AF_SIP;
-pub const PF_IPX: ::c_int =  AF_IPX;
-pub const PF_RTIP: ::c_int =  pseudo_AF_RTIP;
-pub const PF_PIP: ::c_int =  pseudo_AF_PIP;
-pub const PF_ISDN: ::c_int =  AF_ISDN;
-pub const PF_KEY: ::c_int =  pseudo_AF_KEY;
+pub const PF_LINK: ::c_int = AF_LINK;
+pub const PF_XTP: ::c_int = pseudo_AF_XTP;
+pub const PF_COIP: ::c_int = AF_COIP;
+pub const PF_CNT: ::c_int = AF_CNT;
+pub const PF_SIP: ::c_int = AF_SIP;
+pub const PF_IPX: ::c_int = AF_IPX;
+pub const PF_RTIP: ::c_int = pseudo_AF_RTIP;
+pub const PF_PIP: ::c_int = pseudo_AF_PIP;
+pub const PF_ISDN: ::c_int = AF_ISDN;
+pub const PF_KEY: ::c_int = pseudo_AF_KEY;
 pub const PF_INET6: ::c_int = AF_INET6;
-pub const PF_NATM: ::c_int =  AF_NATM;
+pub const PF_NATM: ::c_int = AF_NATM;
 pub const PF_SYSTEM: ::c_int = AF_SYSTEM;
 pub const PF_NETBIOS: ::c_int = AF_NETBIOS;
-pub const PF_PPP: ::c_int =  AF_PPP;
+pub const PF_PPP: ::c_int = AF_PPP;
 #[doc(hidden)]
-pub const PF_MAX: ::c_int =  AF_MAX;
+pub const PF_MAX: ::c_int = AF_MAX;
 
 #[doc(hidden)]
 pub const NET_MAXID: ::c_int = AF_MAX;
@@ -1408,15 +1403,15 @@ pub const SO_NOTIFYCONFLICT: ::c_int = 0x1026;
 pub const SO_RANDOMPORT: ::c_int = 0x1082;
 pub const SO_NP_EXTENSIONS: ::c_int = 0x1083;
 
-pub const MSG_OOB: ::c_int =  0x1;
+pub const MSG_OOB: ::c_int = 0x1;
 pub const MSG_PEEK: ::c_int = 0x2;
 pub const MSG_DONTROUTE: ::c_int = 0x4;
-pub const MSG_EOR: ::c_int =  0x8;
+pub const MSG_EOR: ::c_int = 0x8;
 pub const MSG_TRUNC: ::c_int = 0x10;
 pub const MSG_CTRUNC: ::c_int = 0x20;
 pub const MSG_WAITALL: ::c_int = 0x40;
 pub const MSG_DONTWAIT: ::c_int = 0x80;
-pub const MSG_EOF: ::c_int =  0x100;
+pub const MSG_EOF: ::c_int = 0x100;
 pub const MSG_FLUSH: ::c_int = 0x400;
 pub const MSG_HOLD: ::c_int = 0x800;
 pub const MSG_SEND: ::c_int = 0x1000;
@@ -1426,6 +1421,8 @@ pub const MSG_RCVMORE: ::c_int = 0x4000;
 
 pub const SCM_TIMESTAMP: ::c_int = 0x02;
 pub const SCM_CREDS: ::c_int = 0x03;
+
+pub const CMGROUP_MAX: ::c_int = 16;
 
 pub const IFF_LOOPBACK: ::c_int = 0x8;
 
@@ -1658,22 +1655,22 @@ pub const BSDLY: ::c_int = 0x00008000;
 pub const VTDLY: ::c_int = 0x00010000;
 pub const OFDEL: ::c_int = 0x00020000;
 
-pub const NL0: ::c_int  = 0x00000000;
-pub const NL1: ::c_int  = 0x00000100;
+pub const NL0: ::c_int = 0x00000000;
+pub const NL1: ::c_int = 0x00000100;
 pub const TAB0: ::c_int = 0x00000000;
 pub const TAB1: ::c_int = 0x00000400;
 pub const TAB2: ::c_int = 0x00000800;
-pub const CR0: ::c_int  = 0x00000000;
-pub const CR1: ::c_int  = 0x00001000;
-pub const CR2: ::c_int  = 0x00002000;
-pub const CR3: ::c_int  = 0x00003000;
-pub const FF0: ::c_int  = 0x00000000;
-pub const FF1: ::c_int  = 0x00004000;
-pub const BS0: ::c_int  = 0x00000000;
-pub const BS1: ::c_int  = 0x00008000;
+pub const CR0: ::c_int = 0x00000000;
+pub const CR1: ::c_int = 0x00001000;
+pub const CR2: ::c_int = 0x00002000;
+pub const CR3: ::c_int = 0x00003000;
+pub const FF0: ::c_int = 0x00000000;
+pub const FF1: ::c_int = 0x00004000;
+pub const BS0: ::c_int = 0x00000000;
+pub const BS1: ::c_int = 0x00008000;
 pub const TAB3: ::c_int = 0x00000004;
-pub const VT0: ::c_int  = 0x00000000;
-pub const VT1: ::c_int  = 0x00010000;
+pub const VT0: ::c_int = 0x00000000;
+pub const VT1: ::c_int = 0x00010000;
 pub const IUTF8: ::tcflag_t = 0x00004000;
 pub const CRTSCTS: ::tcflag_t = 0x00030000;
 
@@ -1971,7 +1968,7 @@ f! {
     }
 }
 
-extern {
+extern "C" {
     pub fn aio_read(aiocbp: *mut aiocb) -> ::c_int;
     pub fn aio_write(aiocbp: *mut aiocb) -> ::c_int;
     pub fn aio_fsync(op: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
@@ -1979,13 +1976,20 @@ extern {
     pub fn aio_return(aiocbp: *mut aiocb) -> ::ssize_t;
     #[cfg_attr(all(target_os = "macos", target_arch = "x86"),
                link_name = "aio_suspend$UNIX2003")]
-    pub fn aio_suspend(aiocb_list: *const *const aiocb, nitems: ::c_int,
-                       timeout: *const ::timespec) -> ::c_int;
+    pub fn aio_suspend(
+        aiocb_list: *const *const aiocb,
+        nitems: ::c_int,
+        timeout: *const ::timespec,
+    ) -> ::c_int;
     pub fn aio_cancel(fd: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
     pub fn clock_getres(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
     pub fn clock_gettime(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
-    pub fn lio_listio(mode: ::c_int, aiocb_list: *const *mut aiocb,
-                      nitems: ::c_int, sevp: *mut sigevent) -> ::c_int;
+    pub fn lio_listio(
+        mode: ::c_int,
+        aiocb_list: *const *mut aiocb,
+        nitems: ::c_int,
+        sevp: *mut sigevent,
+    ) -> ::c_int;
 
     pub fn dirfd(dirp: *mut ::DIR) -> ::c_int;
 
@@ -1999,144 +2003,189 @@ extern {
     pub fn endutxent();
     pub fn utmpxname(file: *const ::c_char) -> ::c_int;
 
-    pub fn getnameinfo(sa: *const ::sockaddr,
-                       salen: ::socklen_t,
-                       host: *mut ::c_char,
-                       hostlen: ::socklen_t,
-                       serv: *mut ::c_char,
-                       sevlen: ::socklen_t,
-                       flags: ::c_int) -> ::c_int;
-    pub fn mincore(addr: *const ::c_void, len: ::size_t,
-                   vec: *mut ::c_char) -> ::c_int;
-    pub fn sysctlnametomib(name: *const ::c_char,
-                           mibp: *mut ::c_int,
-                           sizep: *mut ::size_t)
-                           -> ::c_int;
+    pub fn getnameinfo(
+        sa: *const ::sockaddr,
+        salen: ::socklen_t,
+        host: *mut ::c_char,
+        hostlen: ::socklen_t,
+        serv: *mut ::c_char,
+        sevlen: ::socklen_t,
+        flags: ::c_int,
+    ) -> ::c_int;
+    pub fn mincore(addr: *const ::c_void, len: ::size_t, vec: *mut ::c_char) -> ::c_int;
+    pub fn sysctlnametomib(
+        name: *const ::c_char,
+        mibp: *mut ::c_int,
+        sizep: *mut ::size_t,
+    ) -> ::c_int;
     #[cfg_attr(all(target_os = "macos", target_arch = "x86"),
                link_name = "mprotect$UNIX2003")]
-    pub fn mprotect(addr: *mut ::c_void, len: ::size_t, prot: ::c_int)
-                    -> ::c_int;
+    pub fn mprotect(addr: *mut ::c_void, len: ::size_t, prot: ::c_int) -> ::c_int;
     pub fn shm_open(name: *const ::c_char, oflag: ::c_int, ...) -> ::c_int;
-    pub fn sysctl(name: *mut ::c_int,
-                  namelen: ::c_uint,
-                  oldp: *mut ::c_void,
-                  oldlenp: *mut ::size_t,
-                  newp: *mut ::c_void,
-                  newlen: ::size_t)
-                  -> ::c_int;
-    pub fn sysctlbyname(name: *const ::c_char,
-                        oldp: *mut ::c_void,
-                        oldlenp: *mut ::size_t,
-                        newp: *mut ::c_void,
-                        newlen: ::size_t)
-                        -> ::c_int;
+    pub fn sysctl(
+        name: *mut ::c_int,
+        namelen: ::c_uint,
+        oldp: *mut ::c_void,
+        oldlenp: *mut ::size_t,
+        newp: *mut ::c_void,
+        newlen: ::size_t,
+    ) -> ::c_int;
+    pub fn sysctlbyname(
+        name: *const ::c_char,
+        oldp: *mut ::c_void,
+        oldlenp: *mut ::size_t,
+        newp: *mut ::c_void,
+        newlen: ::size_t,
+    ) -> ::c_int;
     pub fn mach_absolute_time() -> u64;
     pub fn mach_timebase_info(info: *mut ::mach_timebase_info) -> ::c_int;
     pub fn pthread_setname_np(name: *const ::c_char) -> ::c_int;
     pub fn pthread_get_stackaddr_np(thread: ::pthread_t) -> *mut ::c_void;
     pub fn pthread_get_stacksize_np(thread: ::pthread_t) -> ::size_t;
-    pub fn pthread_condattr_setpshared(attr: *mut pthread_condattr_t,
-                                       pshared: ::c_int) -> ::c_int;
-    pub fn pthread_condattr_getpshared(attr: *const pthread_condattr_t,
-                                       pshared: *mut ::c_int) -> ::c_int;
-    pub fn pthread_mutexattr_setpshared(attr: *mut pthread_mutexattr_t,
-                                        pshared: ::c_int) -> ::c_int;
-    pub fn pthread_mutexattr_getpshared(attr: *const pthread_mutexattr_t,
-                                        pshared: *mut ::c_int) -> ::c_int;
-    pub fn pthread_rwlockattr_getpshared(attr: *const pthread_rwlockattr_t,
-                                         val: *mut ::c_int) -> ::c_int;
-    pub fn pthread_rwlockattr_setpshared(attr: *mut pthread_rwlockattr_t,
-                                         val: ::c_int) -> ::c_int;
+    pub fn pthread_condattr_setpshared(attr: *mut pthread_condattr_t, pshared: ::c_int) -> ::c_int;
+    pub fn pthread_condattr_getpshared(
+        attr: *const pthread_condattr_t,
+        pshared: *mut ::c_int,
+    ) -> ::c_int;
+    pub fn pthread_mutexattr_setpshared(
+        attr: *mut pthread_mutexattr_t,
+        pshared: ::c_int,
+    ) -> ::c_int;
+    pub fn pthread_mutexattr_getpshared(
+        attr: *const pthread_mutexattr_t,
+        pshared: *mut ::c_int,
+    ) -> ::c_int;
+    pub fn pthread_rwlockattr_getpshared(
+        attr: *const pthread_rwlockattr_t,
+        val: *mut ::c_int,
+    ) -> ::c_int;
+    pub fn pthread_rwlockattr_setpshared(attr: *mut pthread_rwlockattr_t, val: ::c_int) -> ::c_int;
     pub fn __error() -> *mut ::c_int;
-    pub fn backtrace(buf: *mut *mut ::c_void,
-                     sz: ::c_int) -> ::c_int;
+    pub fn backtrace(buf: *mut *mut ::c_void, sz: ::c_int) -> ::c_int;
     #[cfg_attr(target_os = "macos", link_name = "statfs$INODE64")]
     pub fn statfs(path: *const ::c_char, buf: *mut statfs) -> ::c_int;
     #[cfg_attr(target_os = "macos", link_name = "fstatfs$INODE64")]
     pub fn fstatfs(fd: ::c_int, buf: *mut statfs) -> ::c_int;
-    pub fn kevent(kq: ::c_int,
-                  changelist: *const ::kevent,
-                  nchanges: ::c_int,
-                  eventlist: *mut ::kevent,
-                  nevents: ::c_int,
-                  timeout: *const ::timespec) -> ::c_int;
-    pub fn kevent64(kq: ::c_int,
-                    changelist: *const ::kevent64_s,
-                    nchanges: ::c_int,
-                    eventlist: *mut ::kevent64_s,
-                    nevents: ::c_int,
-                    flags: ::c_uint,
-                    timeout: *const ::timespec) -> ::c_int;
-    pub fn mount(src: *const ::c_char,
-                 target: *const ::c_char,
-                 flags: ::c_int,
-                 data: *mut ::c_void) -> ::c_int;
-    pub fn ptrace(request: ::c_int,
-                  pid: ::pid_t,
-                  addr: *mut ::c_char,
-                  data: ::c_int) -> ::c_int;
-    pub fn quotactl(special: *const ::c_char,
-                    cmd: ::c_int,
-                    id: ::c_int,
-                    data: *mut ::c_char) -> ::c_int;
+    pub fn kevent(
+        kq: ::c_int,
+        changelist: *const ::kevent,
+        nchanges: ::c_int,
+        eventlist: *mut ::kevent,
+        nevents: ::c_int,
+        timeout: *const ::timespec,
+    ) -> ::c_int;
+    pub fn kevent64(
+        kq: ::c_int,
+        changelist: *const ::kevent64_s,
+        nchanges: ::c_int,
+        eventlist: *mut ::kevent64_s,
+        nevents: ::c_int,
+        flags: ::c_uint,
+        timeout: *const ::timespec,
+    ) -> ::c_int;
+    pub fn mount(
+        src: *const ::c_char,
+        target: *const ::c_char,
+        flags: ::c_int,
+        data: *mut ::c_void,
+    ) -> ::c_int;
+    pub fn ptrace(request: ::c_int, pid: ::pid_t, addr: *mut ::c_char, data: ::c_int) -> ::c_int;
+    pub fn quotactl(
+        special: *const ::c_char,
+        cmd: ::c_int,
+        id: ::c_int,
+        data: *mut ::c_char,
+    ) -> ::c_int;
     pub fn sethostname(name: *const ::c_char, len: ::c_int) -> ::c_int;
-    pub fn sendfile(fd: ::c_int,
-                    s: ::c_int,
-                    offset: ::off_t,
-                    len: *mut ::off_t,
-                    hdtr: *mut ::sf_hdtr,
-                    flags: ::c_int) -> ::c_int;
-    pub fn openpty(amaster: *mut ::c_int,
-                   aslave: *mut ::c_int,
-                   name: *mut ::c_char,
-                   termp: *mut termios,
-                   winp: *mut ::winsize) -> ::c_int;
-    pub fn forkpty(amaster: *mut ::c_int,
-                   name: *mut ::c_char,
-                   termp: *mut termios,
-                   winp: *mut ::winsize) -> ::pid_t;
+    pub fn sendfile(
+        fd: ::c_int,
+        s: ::c_int,
+        offset: ::off_t,
+        len: *mut ::off_t,
+        hdtr: *mut ::sf_hdtr,
+        flags: ::c_int,
+    ) -> ::c_int;
+    pub fn openpty(
+        amaster: *mut ::c_int,
+        aslave: *mut ::c_int,
+        name: *mut ::c_char,
+        termp: *mut termios,
+        winp: *mut ::winsize,
+    ) -> ::c_int;
+    pub fn forkpty(
+        amaster: *mut ::c_int,
+        name: *mut ::c_char,
+        termp: *mut termios,
+        winp: *mut ::winsize,
+    ) -> ::pid_t;
     pub fn duplocale(base: ::locale_t) -> ::locale_t;
     pub fn freelocale(loc: ::locale_t) -> ::c_int;
     pub fn localeconv_l(loc: ::locale_t) -> *mut lconv;
-    pub fn newlocale(mask: ::c_int,
-                     locale: *const ::c_char,
-                     base: ::locale_t) -> ::locale_t;
+    pub fn newlocale(mask: ::c_int, locale: *const ::c_char, base: ::locale_t) -> ::locale_t;
     pub fn uselocale(loc: ::locale_t) -> ::locale_t;
     pub fn querylocale(mask: ::c_int, loc: ::locale_t) -> *const ::c_char;
     pub fn getpriority(which: ::c_int, who: ::id_t) -> ::c_int;
     pub fn setpriority(which: ::c_int, who: ::id_t, prio: ::c_int) -> ::c_int;
 
-    pub fn getxattr(path: *const ::c_char, name: *const ::c_char,
-                    value: *mut ::c_void, size: ::size_t, position: u32,
-                    flags: ::c_int) -> ::ssize_t;
-    pub fn fgetxattr(filedes: ::c_int, name: *const ::c_char,
-                     value: *mut ::c_void, size: ::size_t, position: u32,
-                     flags: ::c_int) -> ::ssize_t;
-    pub fn setxattr(path: *const ::c_char, name: *const ::c_char,
-                    value: *const ::c_void, size: ::size_t, position: u32,
-                    flags: ::c_int) -> ::c_int;
-    pub fn fsetxattr(filedes: ::c_int, name: *const ::c_char,
-                     value: *const ::c_void, size: ::size_t, position: u32,
-                     flags: ::c_int) -> ::c_int;
-    pub fn listxattr(path: *const ::c_char, list: *mut ::c_char,
-                     size: ::size_t, flags: ::c_int) -> ::ssize_t;
-    pub fn flistxattr(filedes: ::c_int, list: *mut ::c_char,
-                      size: ::size_t, flags: ::c_int) -> ::ssize_t;
-    pub fn removexattr(path: *const ::c_char, name: *const ::c_char,
-                       flags: ::c_int) -> ::c_int;
-    pub fn fremovexattr(filedes: ::c_int, name: *const ::c_char,
-                        flags: ::c_int) -> ::c_int;
+    pub fn getxattr(
+        path: *const ::c_char,
+        name: *const ::c_char,
+        value: *mut ::c_void,
+        size: ::size_t,
+        position: u32,
+        flags: ::c_int,
+    ) -> ::ssize_t;
+    pub fn fgetxattr(
+        filedes: ::c_int,
+        name: *const ::c_char,
+        value: *mut ::c_void,
+        size: ::size_t,
+        position: u32,
+        flags: ::c_int,
+    ) -> ::ssize_t;
+    pub fn setxattr(
+        path: *const ::c_char,
+        name: *const ::c_char,
+        value: *const ::c_void,
+        size: ::size_t,
+        position: u32,
+        flags: ::c_int,
+    ) -> ::c_int;
+    pub fn fsetxattr(
+        filedes: ::c_int,
+        name: *const ::c_char,
+        value: *const ::c_void,
+        size: ::size_t,
+        position: u32,
+        flags: ::c_int,
+    ) -> ::c_int;
+    pub fn listxattr(
+        path: *const ::c_char,
+        list: *mut ::c_char,
+        size: ::size_t,
+        flags: ::c_int,
+    ) -> ::ssize_t;
+    pub fn flistxattr(
+        filedes: ::c_int,
+        list: *mut ::c_char,
+        size: ::size_t,
+        flags: ::c_int,
+    ) -> ::ssize_t;
+    pub fn removexattr(path: *const ::c_char, name: *const ::c_char, flags: ::c_int) -> ::c_int;
+    pub fn fremovexattr(filedes: ::c_int, name: *const ::c_char, flags: ::c_int) -> ::c_int;
 
-    pub fn getgrouplist(name: *const ::c_char,
-                        basegid: ::c_int,
-                        groups: *mut ::c_int,
-                        ngroups: *mut ::c_int) -> ::c_int;
+    pub fn getgrouplist(
+        name: *const ::c_char,
+        basegid: ::c_int,
+        groups: *mut ::c_int,
+        ngroups: *mut ::c_int,
+    ) -> ::c_int;
     pub fn initgroups(user: *const ::c_char, basegroup: ::c_int) -> ::c_int;
 
     #[cfg_attr(all(target_os = "macos", target_arch = "x86"),
                link_name = "waitid$UNIX2003")]
-    pub fn waitid(idtype: idtype_t, id: id_t, infop: *mut ::siginfo_t,
-                  options: ::c_int) -> ::c_int;
+    pub fn waitid(idtype: idtype_t, id: id_t, infop: *mut ::siginfo_t, options: ::c_int)
+        -> ::c_int;
     pub fn brk(addr: *const ::c_void) -> *mut ::c_void;
     pub fn sbrk(increment: ::c_int) -> *mut ::c_void;
     pub fn settimeofday(tv: *const ::timeval, tz: *const ::timezone) -> ::c_int;

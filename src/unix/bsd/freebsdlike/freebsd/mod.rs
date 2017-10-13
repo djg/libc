@@ -127,6 +127,15 @@ s! {
         pub shm_dtime: ::time_t,
         pub shm_ctime: ::time_t,
     }
+
+    pub struct sockcred {
+        pub sc_uid: ::uid_t,
+        pub sc_euid: ::uid_t,
+        pub sc_gid: ::gid_t,
+        pub sc_egid: ::gid_t,
+        pub sc_ngroups: ::c_int,
+        pub sc_groups: [::gid_t,0],
+    }
 }
 
 pub const SIGEV_THREAD_ID: ::c_int = 4;
@@ -401,6 +410,9 @@ pub const SO_USER_COOKIE: ::c_int = 0x1015;
 pub const SO_PROTOCOL: ::c_int = 0x1016;
 pub const SO_PROTOTYPE: ::c_int = SO_PROTOCOL;
 pub const SO_VENDOR: ::c_int = 0x80000000;
+
+pub const SCM_CREDS: ::c_int = 0x03;
+pub const SCM_BINTIME: ::c_int = 0x04;
 
 pub const AF_SLOW: ::c_int = 33;
 pub const AF_SCLUSTER: ::c_int = 34;
@@ -678,9 +690,9 @@ pub const IPC_RMID: ::c_int = 0;
 pub const IPC_SET: ::c_int = 1;
 pub const IPC_STAT: ::c_int = 2;
 pub const IPC_INFO: ::c_int = 3;
-pub const IPC_R : ::c_int = 0o400;
-pub const IPC_W : ::c_int = 0o200;
-pub const IPC_M : ::c_int = 0o10000;
+pub const IPC_R: ::c_int = 0o400;
+pub const IPC_W: ::c_int = 0o200;
+pub const IPC_M: ::c_int = 0o10000;
 pub const MSG_NOERROR: ::c_int = 0o10000;
 pub const SHM_RDONLY: ::c_int = 0o10000;
 pub const SHM_RND: ::c_int = 0o20000;
@@ -730,12 +742,8 @@ pub const LC_MESSAGES_MASK: ::c_int = (1 << 2);
 pub const LC_MONETARY_MASK: ::c_int = (1 << 3);
 pub const LC_NUMERIC_MASK: ::c_int = (1 << 4);
 pub const LC_TIME_MASK: ::c_int = (1 << 5);
-pub const LC_ALL_MASK: ::c_int = LC_COLLATE_MASK
-                               | LC_CTYPE_MASK
-                               | LC_MESSAGES_MASK
-                               | LC_MONETARY_MASK
-                               | LC_NUMERIC_MASK
-                               | LC_TIME_MASK;
+pub const LC_ALL_MASK: ::c_int = LC_COLLATE_MASK | LC_CTYPE_MASK | LC_MESSAGES_MASK |
+    LC_MONETARY_MASK | LC_NUMERIC_MASK | LC_TIME_MASK;
 
 pub const WSTOPPED: ::c_int = 2; // same as WUNTRACED
 pub const WCONTINUED: ::c_int = 4;
@@ -766,11 +774,10 @@ pub const _PC_ACL_NFS4: ::c_int = 64;
 
 pub const _SC_CPUSET_SIZE: ::c_int = 122;
 
-extern {
+extern "C" {
     pub fn __error() -> *mut ::c_int;
 
-    pub fn mprotect(addr: *const ::c_void, len: ::size_t, prot: ::c_int)
-                    -> ::c_int;
+    pub fn mprotect(addr: *const ::c_void, len: ::size_t, prot: ::c_int) -> ::c_int;
 
     pub fn clock_getres(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
     pub fn clock_gettime(clk_id: ::clockid_t, tp: *mut ::timespec) -> ::c_int;
@@ -779,44 +786,47 @@ extern {
     pub fn jail(jail: *mut ::jail) -> ::c_int;
     pub fn jail_attach(jid: ::c_int) -> ::c_int;
     pub fn jail_remove(jid: ::c_int) -> ::c_int;
-    pub fn jail_get(iov: *mut ::iovec, niov: ::c_uint, flags: ::c_int)
-                    -> ::c_int;
-    pub fn jail_set(iov: *mut ::iovec, niov: ::c_uint, flags: ::c_int)
-                    -> ::c_int;
+    pub fn jail_get(iov: *mut ::iovec, niov: ::c_uint, flags: ::c_int) -> ::c_int;
+    pub fn jail_set(iov: *mut ::iovec, niov: ::c_uint, flags: ::c_int) -> ::c_int;
 
-    pub fn posix_fallocate(fd: ::c_int, offset: ::off_t,
-                           len: ::off_t) -> ::c_int;
-    pub fn posix_fadvise(fd: ::c_int, offset: ::off_t, len: ::off_t,
-                         advise: ::c_int) -> ::c_int;
+    pub fn posix_fallocate(fd: ::c_int, offset: ::off_t, len: ::off_t) -> ::c_int;
+    pub fn posix_fadvise(fd: ::c_int, offset: ::off_t, len: ::off_t, advise: ::c_int) -> ::c_int;
     pub fn mkostemp(template: *mut ::c_char, flags: ::c_int) -> ::c_int;
-    pub fn mkostemps(template: *mut ::c_char,
-                     suffixlen: ::c_int,
-                     flags: ::c_int) -> ::c_int;
+    pub fn mkostemps(template: *mut ::c_char, suffixlen: ::c_int, flags: ::c_int) -> ::c_int;
 
     pub fn getutxuser(user: *const ::c_char) -> *mut utmpx;
     pub fn setutxdb(_type: ::c_int, file: *const ::c_char) -> ::c_int;
 
-    pub fn aio_waitcomplete(iocbp: *mut *mut aiocb,
-                            timeout: *mut ::timespec) -> ::ssize_t;
+    pub fn aio_waitcomplete(iocbp: *mut *mut aiocb, timeout: *mut ::timespec) -> ::ssize_t;
 
     pub fn freelocale(loc: ::locale_t) -> ::c_int;
-    pub fn waitid(idtype: idtype_t, id: ::id_t, infop: *mut ::siginfo_t,
-                  options: ::c_int) -> ::c_int;
+    pub fn waitid(
+        idtype: idtype_t,
+        id: ::id_t,
+        infop: *mut ::siginfo_t,
+        options: ::c_int,
+    ) -> ::c_int;
 
     pub fn ftok(pathname: *const ::c_char, proj_id: ::c_int) -> ::key_t;
     pub fn shmget(key: ::key_t, size: ::size_t, shmflg: ::c_int) -> ::c_int;
-    pub fn shmat(shmid: ::c_int, shmaddr: *const ::c_void,
-        shmflg: ::c_int) -> *mut ::c_void;
+    pub fn shmat(shmid: ::c_int, shmaddr: *const ::c_void, shmflg: ::c_int) -> *mut ::c_void;
     pub fn shmdt(shmaddr: *const ::c_void) -> ::c_int;
-    pub fn shmctl(shmid: ::c_int, cmd: ::c_int,
-        buf: *mut ::shmid_ds) -> ::c_int;
-    pub fn msgctl(msqid: ::c_int, cmd: ::c_int,
-        buf: *mut ::msqid_ds) -> ::c_int;
+    pub fn shmctl(shmid: ::c_int, cmd: ::c_int, buf: *mut ::shmid_ds) -> ::c_int;
+    pub fn msgctl(msqid: ::c_int, cmd: ::c_int, buf: *mut ::msqid_ds) -> ::c_int;
     pub fn msgget(key: ::key_t, msgflg: ::c_int) -> ::c_int;
-    pub fn msgrcv(msqid: ::c_int, msgp: *mut ::c_void, msgsz: ::size_t,
-        msgtyp: ::c_long, msgflg: ::c_int) -> ::c_int;
-    pub fn msgsnd(msqid: ::c_int, msgp: *const ::c_void, msgsz: ::size_t,
-        msgflg: ::c_int) -> ::c_int;
+    pub fn msgrcv(
+        msqid: ::c_int,
+        msgp: *mut ::c_void,
+        msgsz: ::size_t,
+        msgtyp: ::c_long,
+        msgflg: ::c_int,
+    ) -> ::c_int;
+    pub fn msgsnd(
+        msqid: ::c_int,
+        msgp: *const ::c_void,
+        msgsz: ::size_t,
+        msgflg: ::c_int,
+    ) -> ::c_int;
     pub fn cfmakesane(termios: *mut ::termios);
 }
 
