@@ -418,7 +418,7 @@ s! {
         pub cmcred_euid: ::uid_t,
         pub cmcred_gid: ::gid_t,
         pub cmcred_ngroups: ::c_short,
-        pub cmcred_groups: [::gid_t,CMGROUP_MAX],
+        pub cmcred_groups: [::gid_t;16],
     }
 }
 
